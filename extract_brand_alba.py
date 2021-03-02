@@ -5,17 +5,21 @@ import requests
 from bs4 import BeautifulSoup
 from save_csv import save_to_csv
 def get_brand_alba_info(html):
-    brand_albas = html.find(id="NormalInfo").find("tbody").find_all("tr")
-    brand_albas = brand_albas[::2]
+    brand_albas = html.find(id="NormalInfo").find("tbody").find_all("tr",{"class":""})
+    # brand_albas = brand_albas[::2]
     brand_albas_info_pagination=[]
     for alba in brand_albas:
         alba_dict={}
-        alba_place = alba.find("td",{"class","local"}).text
-        alba_title = alba.find("td",{"class","title"}).find("span",{"class":"company"}).text
-        alba_time = alba.find("td",{"class","data"}).text
-        alba_pay = alba.find("td",{"class","pay"}).text
-        alba_date = alba.find("td",{"class","regDate"}).text
-        alba_dict = {'place':alba_place,'title':alba_title, 'time':alba_time, 'pay':alba_pay, 'date':alba_date }
+        alba_place = alba.find("td",{"class","local"}).text.replace(u'\xa0', ' ')
+        alba_title = alba.find("td",{"class","title"}).find("span",{"class":"company"}).text.strip()
+        alba_time = alba.find("td",{"class","data"}).text.replace(u'\xa0', ' ')
+        alba_pay = alba.find("td",{"class","pay"}).text.replace(u'\xa0', ' ')
+        alba_date = alba.find("td",{"class","regDate"}).text.replace(u'\xa0', ' ')
+        alba_dict = {'place':alba_place,
+                    'title':alba_title, 
+                    'time':alba_time, 
+                    'pay':alba_pay, 
+                    'date':alba_date }
         brand_albas_info_pagination.append(alba_dict)
     return brand_albas_info_pagination  
 def get_brand_albas_page(brand_link,brand_name):
